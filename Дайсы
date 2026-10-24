@@ -1,0 +1,581 @@
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local C = {
+    bgDeep = Color3.fromRGB(4, 7, 15),
+    pn     = Color3.fromRGB(14, 20, 38),
+    cd     = Color3.fromRGB(20, 28, 50),
+    nb     = Color3.fromRGB(120, 220, 255),
+    nbBr   = Color3.fromRGB(220, 250, 255),
+    nd     = Color3.fromRGB(0, 130, 210),
+    tx     = Color3.fromRGB(255, 255, 255),
+    sb     = Color3.fromRGB(180, 200, 230),
+}
+
+local AQUA = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(220, 250, 255)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 160, 240)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(220, 250, 255)),
+}
+local SUNSET = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 180, 100)),
+    ColorSequenceKeypoint.new(0.35, Color3.fromRGB(255, 100, 160)),
+    ColorSequenceKeypoint.new(0.7, Color3.fromRGB(180, 120, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 180, 255)),
+}
+local TITLE = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(220, 250, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)),
+}
+
+local LOGO_ID = "rbxassetid://128483417570764"
+local BG_IMAGE_ID = "rbxassetid://132914936863592"
+
+local colors = {
+    {name = "Red",    color = Color3.fromRGB(255, 80, 100)},
+    {name = "Orange", color = Color3.fromRGB(255, 150, 70)},
+    {name = "Yellow", color = Color3.fromRGB(255, 215, 90)},
+    {name = "Green",  color = Color3.fromRGB(50, 230, 160)},
+    {name = "Blue",   color = Color3.fromRGB(80, 190, 255)},
+    {name = "Purple", color = Color3.fromRGB(200, 130, 255)},
+}
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "SunsetCubesGui"
+screenGui.ResetOnSpawn = false
+screenGui.IgnoreGuiInset = true
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+screenGui.DisplayOrder = 100
+screenGui.Parent = playerGui
+
+------------------------------------------------------------
+-- ГЛАВНОЕ ОКНО
+------------------------------------------------------------
+local W, H = 230, 178
+local win = Instance.new("Frame")
+win.Size = UDim2.new(0, W, 0, H)
+win.Position = UDim2.new(0.5, -W/2, 0.5, -H/2)
+win.BackgroundColor3 = C.bgDeep
+win.BorderSizePixel = 0
+win.ClipsDescendants = true
+win.Active = true
+win.Parent = screenGui
+
+local winCorner = Instance.new("UICorner")
+winCorner.CornerRadius = UDim.new(0, 12)
+winCorner.Parent = win
+
+local winScale = Instance.new("UIScale")
+winScale.Parent = win
+winScale.Scale = 0.9
+TweenService:Create(winScale, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+
+local bgImg = Instance.new("ImageLabel")
+bgImg.Size = UDim2.new(1, 0, 1, 0)
+bgImg.BackgroundTransparency = 1
+bgImg.Image = BG_IMAGE_ID
+bgImg.ScaleType = Enum.ScaleType.Crop
+bgImg.ImageTransparency = 0.35
+bgImg.ZIndex = 0
+bgImg.Parent = win
+local bgImgC = Instance.new("UICorner")
+bgImgC.CornerRadius = UDim.new(0, 12)
+bgImgC.Parent = bgImg
+
+local bgGrad = Instance.new("UIGradient")
+bgGrad.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, C.pn),
+    ColorSequenceKeypoint.new(1, C.bgDeep),
+}
+bgGrad.Rotation = 90
+bgGrad.Transparency = NumberSequence.new(0.4, 0)
+bgGrad.Parent = win
+
+local winStroke = Instance.new("UIStroke")
+winStroke.Color = C.nbBr
+winStroke.Thickness = 1.4
+winStroke.Transparency = 0.05
+winStroke.Parent = win
+local winStrokeG = Instance.new("UIGradient")
+winStrokeG.Color = SUNSET
+winStrokeG.Parent = winStroke
+
+task.spawn(function()
+    local t = 0
+    while win.Parent do
+        task.wait(0.03)
+        t = t + 0.06
+        if winStrokeG then winStrokeG.Offset = Vector2.new(math.sin(t) * 0.4, 0) end
+    end
+end)
+
+local topBar = Instance.new("Frame")
+topBar.Size = UDim2.new(1, 0, 0, 32)
+topBar.BackgroundColor3 = C.pn
+topBar.BackgroundTransparency = 0.1
+topBar.BorderSizePixel = 0
+topBar.Active = true
+topBar.Parent = win
+local topBarCorner = Instance.new("UICorner")
+topBarCorner.CornerRadius = UDim.new(0, 12)
+topBarCorner.Parent = topBar
+
+local topBarFix = Instance.new("Frame")
+topBarFix.Size = UDim2.new(1, 0, 0, 12)
+topBarFix.Position = UDim2.new(0, 0, 1, -12)
+topBarFix.BackgroundColor3 = C.pn
+topBarFix.BackgroundTransparency = 0.1
+topBarFix.BorderSizePixel = 0
+topBarFix.ZIndex = 0
+topBarFix.Parent = topBar
+
+local logo = Instance.new("Frame")
+logo.Size = UDim2.new(0, 20, 0, 20)
+logo.Position = UDim2.new(0, 6, 0.5, -10)
+logo.BackgroundColor3 = C.tx
+logo.BorderSizePixel = 0
+logo.Parent = topBar
+local logoCorner = Instance.new("UICorner")
+logoCorner.CornerRadius = UDim.new(0, 5)
+logoCorner.Parent = logo
+
+local logoImg = Instance.new("ImageLabel")
+logoImg.Size = UDim2.new(1, -2, 1, -2)
+logoImg.Position = UDim2.new(0, 1, 0, 1)
+logoImg.BackgroundTransparency = 1
+logoImg.Image = LOGO_ID
+logoImg.ScaleType = Enum.ScaleType.Crop
+logoImg.Parent = logo
+local logoImgC = Instance.new("UICorner")
+logoImgC.CornerRadius = UDim.new(0, 4)
+logoImgC.Parent = logoImg
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -100, 0, 14)
+title.Position = UDim2.new(0, 30, 0, 3)
+title.BackgroundTransparency = 1
+title.Text = "Sunset Cubes"
+title.Font = Enum.Font.GothamBlack
+title.TextSize = 11
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.TextColor3 = C.tx
+title.Parent = topBar
+local titleG = Instance.new("UIGradient")
+titleG.Color = TITLE
+titleG.Parent = title
+
+task.spawn(function()
+    local t = 0
+    while title.Parent do
+        task.wait(0.02)
+        t = t + 0.05
+        if titleG then titleG.Offset = Vector2.new(math.sin(t * 0.9) * 0.6, 0) end
+    end
+end)
+
+local subtitle = Instance.new("TextLabel")
+subtitle.Size = UDim2.new(1, -100, 0, 8)
+subtitle.Position = UDim2.new(0, 30, 0, 16)
+subtitle.BackgroundTransparency = 1
+subtitle.Text = "●  roll the colors"
+subtitle.Font = Enum.Font.GothamBold
+subtitle.TextSize = 7
+subtitle.TextXAlignment = Enum.TextXAlignment.Left
+subtitle.TextColor3 = C.sb
+subtitle.Parent = topBar
+
+local dotToggle = Instance.new("Frame")
+dotToggle.Size = UDim2.new(0, 7, 0, 7)
+dotToggle.Position = UDim2.new(1, -14, 0.5, -3.5)
+dotToggle.BackgroundColor3 = C.sb
+dotToggle.BackgroundTransparency = 0.6
+dotToggle.BorderSizePixel = 0
+dotToggle.Active = true
+dotToggle.Parent = topBar
+local dtc = Instance.new("UICorner")
+dtc.CornerRadius = UDim.new(1, 0)
+dtc.Parent = dotToggle
+
+local diceArea = Instance.new("Frame")
+diceArea.Size = UDim2.new(1, -12, 0, 90)
+diceArea.Position = UDim2.new(0, 6, 0, 48)
+diceArea.BackgroundColor3 = C.cd
+diceArea.BackgroundTransparency = 0.25
+diceArea.BorderSizePixel = 0
+diceArea.Parent = win
+local diceAreaC = Instance.new("UICorner")
+diceAreaC.CornerRadius = UDim.new(0, 8)
+diceAreaC.Parent = diceArea
+local diceAreaStroke = Instance.new("UIStroke")
+diceAreaStroke.Color = C.nb
+diceAreaStroke.Thickness = 1
+diceAreaStroke.Transparency = 0.5
+diceAreaStroke.Parent = diceArea
+
+local diceHolder = Instance.new("Frame")
+diceHolder.Size = UDim2.new(1, 0, 1, 0)
+diceHolder.BackgroundTransparency = 1
+diceHolder.Parent = diceArea
+
+local dicePad = Instance.new("UIPadding")
+dicePad.PaddingTop = UDim.new(0, 24)
+dicePad.Parent = diceHolder
+
+local diceLayout = Instance.new("UIListLayout")
+diceLayout.FillDirection = Enum.FillDirection.Horizontal
+diceLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+diceLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+diceLayout.Padding = UDim.new(0, 6)
+diceLayout.Parent = diceHolder
+
+local DIE_SIZE = 42
+local dice = {}
+
+for i = 1, 4 do
+    local container = Instance.new("Frame")
+    container.Size = UDim2.new(0, DIE_SIZE, 0, DIE_SIZE + 16)
+    container.BackgroundTransparency = 1
+    container.Parent = diceHolder
+
+    local shadow = Instance.new("Frame")
+    shadow.Size = UDim2.new(0, DIE_SIZE - 10, 0, 4)
+    shadow.Position = UDim2.new(0.5, -(DIE_SIZE-10)/2, 1, -6)
+    shadow.BackgroundColor3 = Color3.new(0, 0, 0)
+    shadow.BackgroundTransparency = 0.6
+    shadow.BorderSizePixel = 0
+    shadow.ZIndex = 1
+    shadow.Parent = container
+    local shadowC = Instance.new("UICorner")
+    shadowC.CornerRadius = UDim.new(1, 0)
+    shadowC.Parent = shadow
+
+    local die = Instance.new("Frame")
+    die.Size = UDim2.new(0, DIE_SIZE, 0, DIE_SIZE)
+    die.Position = UDim2.new(0, 0, 0, 0)
+    die.BackgroundColor3 = colors[i].color
+    die.BorderSizePixel = 0
+    die.ZIndex = 2
+    die.Parent = container
+    local dieC = Instance.new("UICorner")
+    dieC.CornerRadius = UDim.new(0, 8)
+    dieC.Parent = die
+
+    local dot = Instance.new("Frame")
+    dot.Size = UDim2.new(0, 10, 0, 10)
+    dot.Position = UDim2.new(0.5, -5, 0.5, -5)
+    dot.BackgroundColor3 = C.tx
+    dot.BorderSizePixel = 0
+    dot.ZIndex = 4
+    dot.Parent = die
+    local dotC = Instance.new("UICorner")
+    dotC.CornerRadius = UDim.new(1, 0)
+    dotC.Parent = dot
+
+    dice[i] = {
+        frame = die, dot = dot, shadow = shadow,
+    }
+end
+
+local rollBtn = Instance.new("TextButton")
+rollBtn.Size = UDim2.new(1, -12, 0, 26)
+rollBtn.Position = UDim2.new(0, 6, 0, 144)
+rollBtn.BackgroundColor3 = C.nd
+rollBtn.BorderSizePixel = 0
+rollBtn.Text = "ROLL"
+rollBtn.Font = Enum.Font.GothamBlack
+rollBtn.TextSize = 11
+rollBtn.TextColor3 = C.tx
+rollBtn.AutoButtonColor = false
+rollBtn.Parent = win
+local rollC = Instance.new("UICorner")
+rollC.CornerRadius = UDim.new(1, 0)
+rollC.Parent = rollBtn
+local rollG = Instance.new("UIGradient")
+rollG.Color = AQUA
+rollG.Parent = rollBtn
+local rollStroke = Instance.new("UIStroke")
+rollStroke.Color = C.nbBr
+rollStroke.Thickness = 1.2
+rollStroke.Transparency = 0.15
+rollStroke.Parent = rollBtn
+local rollScale = Instance.new("UIScale")
+rollScale.Parent = rollBtn
+
+rollBtn.MouseEnter:Connect(function()
+    TweenService:Create(rollScale, TweenInfo.new(0.15), {Scale = 1.04}):Play()
+end)
+rollBtn.MouseLeave:Connect(function()
+    TweenService:Create(rollScale, TweenInfo.new(0.15), {Scale = 1}):Play()
+end)
+rollBtn.MouseButton1Down:Connect(function()
+    TweenService:Create(rollScale, TweenInfo.new(0.08), {Scale = 0.94}):Play()
+end)
+rollBtn.MouseButton1Up:Connect(function()
+    TweenService:Create(rollScale, TweenInfo.new(0.15, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1.04}):Play()
+end)
+
+------------------------------------------------------------
+-- МЕНЮ ЦВЕТОВ — вертикальный список сверху вниз
+------------------------------------------------------------
+local BW, BH = 100, 214
+local colorWin = Instance.new("Frame")
+colorWin.Name = "BlockColorsWindow"
+colorWin.Size = UDim2.new(0, BW, 0, BH)
+colorWin.Position = UDim2.new(0.5, 122, 0.5, -BH/2)
+colorWin.BackgroundColor3 = C.bgDeep
+colorWin.BorderSizePixel = 0
+colorWin.Visible = true
+colorWin.Active = true
+colorWin.Parent = screenGui
+
+local cwC = Instance.new("UICorner")
+cwC.CornerRadius = UDim.new(0, 9)
+cwC.Parent = colorWin
+
+local cwGrad = Instance.new("UIGradient")
+cwGrad.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, C.pn),
+    ColorSequenceKeypoint.new(1, C.bgDeep),
+}
+cwGrad.Rotation = 90
+cwGrad.Parent = colorWin
+
+local cwStroke = Instance.new("UIStroke")
+cwStroke.Color = C.nbBr
+cwStroke.Thickness = 1.2
+cwStroke.Transparency = 0.15
+cwStroke.Parent = colorWin
+local cwStrokeG = Instance.new("UIGradient")
+cwStrokeG.Color = SUNSET
+cwStrokeG.Parent = cwStroke
+
+local cwDragArea = Instance.new("Frame")
+cwDragArea.Size = UDim2.new(1, 0, 0, 10)
+cwDragArea.BackgroundTransparency = 1
+cwDragArea.Active = true
+cwDragArea.Parent = colorWin
+
+-- вертикальный список
+local cwList = Instance.new("Frame")
+cwList.Size = UDim2.new(1, -8, 1, -14)
+cwList.Position = UDim2.new(0, 4, 0, 11)
+cwList.BackgroundTransparency = 1
+cwList.Parent = colorWin
+
+local cwLayout = Instance.new("UIListLayout")
+cwLayout.FillDirection = Enum.FillDirection.Vertical
+cwLayout.Padding = UDim.new(0, 3)
+cwLayout.SortOrder = Enum.SortOrder.LayoutOrder
+cwLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+cwLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+cwLayout.Parent = cwList
+
+local colorBlocked = {}
+for _, c in ipairs(colors) do colorBlocked[c.name] = false end
+
+for i, c in ipairs(colors) do
+    local cell = Instance.new("Frame")
+    cell.Name = c.name
+    cell.Size = UDim2.new(1, 0, 0, 31)
+    cell.BackgroundColor3 = c.color
+    cell.BackgroundTransparency = 0
+    cell.BorderSizePixel = 0
+    cell.LayoutOrder = i
+    cell.Active = true
+    cell.ClipsDescendants = true
+    cell.Parent = cwList
+
+    local cc = Instance.new("UICorner")
+    cc.CornerRadius = UDim.new(0, 6)
+    cc.Parent = cell
+
+    local cs = Instance.new("UIStroke")
+    cs.Color = C.tx
+    cs.Thickness = 1
+    cs.Transparency = 0.4
+    cs.Parent = cell
+
+    local shine = Instance.new("Frame")
+    shine.Size = UDim2.new(1, -4, 0, 5)
+    shine.Position = UDim2.new(0, 2, 0, 2)
+    shine.BackgroundColor3 = C.tx
+    shine.BackgroundTransparency = 0.82
+    shine.BorderSizePixel = 0
+    shine.Parent = cell
+    local shineC = Instance.new("UICorner")
+    shineC.CornerRadius = UDim.new(0, 3)
+    shineC.Parent = shine
+
+    local numLabel = Instance.new("TextLabel")
+    numLabel.Size = UDim2.new(0, 14, 0, 14)
+    numLabel.Position = UDim2.new(0, 5, 0.5, -7)
+    numLabel.BackgroundTransparency = 1
+    numLabel.Text = tostring(i)
+    numLabel.Font = Enum.Font.GothamBlack
+    numLabel.TextSize = 11
+    numLabel.TextXAlignment = Enum.TextXAlignment.Left
+    numLabel.TextColor3 = C.tx
+    numLabel.TextStrokeTransparency = 0.3
+    numLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    numLabel.ZIndex = 3
+    numLabel.Parent = cell
+
+    cell.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+            or input.UserInputType == Enum.UserInputType.Touch then
+            colorBlocked[c.name] = not colorBlocked[c.name]
+        end
+    end)
+end
+
+dotToggle.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+        or input.UserInputType == Enum.UserInputType.Touch then
+        colorWin.Visible = not colorWin.Visible
+    end
+end)
+
+------------------------------------------------------------
+-- ПЕРЕТАСКИВАНИЕ
+------------------------------------------------------------
+local dragging, dragStart, startPos = false, nil, nil
+topBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+        or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = win.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then dragging = false end
+        end)
+    end
+end)
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement
+        or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - dragStart
+        win.Position = UDim2.new(
+            startPos.X.Scale, startPos.X.Offset + delta.X,
+            startPos.Y.Scale, startPos.Y.Offset + delta.Y
+        )
+    end
+end)
+
+local cwDragState, cwStart, cwStartPos = false, nil, nil
+cwDragArea.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+        or input.UserInputType == Enum.UserInputType.Touch then
+        cwDragState = true
+        cwStart = input.Position
+        cwStartPos = colorWin.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then cwDragState = false end
+        end)
+    end
+end)
+UserInputService.InputChanged:Connect(function(input)
+    if cwDragState and (input.UserInputType == Enum.UserInputType.MouseMovement
+        or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - cwStart
+        colorWin.Position = UDim2.new(
+            cwStartPos.X.Scale, cwStartPos.X.Offset + delta.X,
+            cwStartPos.Y.Scale, cwStartPos.Y.Offset + delta.Y
+        )
+    end
+end)
+
+------------------------------------------------------------
+-- АНИМАЦИЯ
+------------------------------------------------------------
+local function animateDie(dieData, avail)
+    local die = dieData.frame
+    local dot = dieData.dot
+    local shadow = dieData.shadow
+    local bounce = 0.12
+    local jump = 16
+
+    for _ = 1, 3 do
+        local c = avail[math.random(1, #avail)]
+        TweenService:Create(die, TweenInfo.new(0.06), {BackgroundColor3 = c.color}):Play()
+
+        local up = TweenService:Create(die, TweenInfo.new(bounce, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            Position = UDim2.new(0, 0, 0, -jump),
+            Rotation = math.random(-12, 12),
+        })
+        TweenService:Create(shadow, TweenInfo.new(bounce), {
+            Size = UDim2.new(0, DIE_SIZE - 18, 0, 3),
+            BackgroundTransparency = 0.85,
+        }):Play()
+        up:Play()
+        up.Completed:Wait()
+
+        local down = TweenService:Create(die, TweenInfo.new(bounce, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+            Position = UDim2.new(0, 0, 0, 0),
+            Rotation = 0,
+        })
+        TweenService:Create(shadow, TweenInfo.new(bounce), {
+            Size = UDim2.new(0, DIE_SIZE - 10, 0, 4),
+            BackgroundTransparency = 0.6,
+        }):Play()
+        down:Play()
+        down.Completed:Wait()
+    end
+
+    local finalColor = avail[math.random(1, #avail)]
+    TweenService:Create(die, TweenInfo.new(0.16), {
+        BackgroundColor3 = finalColor.color,
+        Position = UDim2.new(0, 0, 0, 0),
+        Rotation = 0,
+    }):Play()
+
+    local pop = TweenService:Create(dot, TweenInfo.new(0.18, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        Size = UDim2.new(0, 14, 0, 14),
+        Position = UDim2.new(0.5, -7, 0.5, -7),
+    })
+    pop:Play()
+    pop.Completed:Wait()
+    TweenService:Create(dot, TweenInfo.new(0.18), {
+        Size = UDim2.new(0, 10, 0, 10),
+        Position = UDim2.new(0.5, -5, 0.5, -5),
+    }):Play()
+end
+
+------------------------------------------------------------
+-- РОЛЛ
+------------------------------------------------------------
+local rolling = false
+
+local function rollDice()
+    if rolling then return end
+    rolling = true
+    rollBtn.Text = "ROLLING..."
+
+    local avail = {}
+    for _, c in ipairs(colors) do
+        if not colorBlocked[c.name] then
+            table.insert(avail, c)
+        end
+    end
+
+    if #avail == 0 then
+        rollBtn.Text = "..."
+        task.wait(0.5)
+        rollBtn.Text = "ROLL"
+        rolling = false
+        return
+    end
+
+    for i = 1, 4 do
+        animateDie(dice[i], avail)
+        task.wait(0.06)
+    end
+
+    rollBtn.Text = "ROLL"
+    rolling = false
+end
+
+rollBtn.Activated:Connect(rollDice)
